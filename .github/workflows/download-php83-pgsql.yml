@@ -15,11 +15,24 @@ jobs:
           sudo add-apt-repository -y ppa:ondrej/php
           sudo apt-get update
 
-      - name: Download exact package
+      - name: Audit PHP package availability
+        run: |
+          echo "=== sources ==="
+          grep -R "ondrej\|launchpad\|php" /etc/apt/sources.list /etc/apt/sources.list.d || true
+          echo "=== apt-cache policy php8.3 ==="
+          apt-cache policy php8.3 || true
+          echo "=== apt-cache policy php8.3-pgsql ==="
+          apt-cache policy php8.3-pgsql || true
+          echo "=== apt-cache search php8.3 pgsql ==="
+          apt-cache search php8.3 | grep -i "pgsql\|postgres" || true
+          echo "=== apt-cache search pgsql ==="
+          apt-cache search pgsql | grep -i "php" || true
+
+      - name: Download candidate package
         run: |
           mkdir -p debs
           cd debs
-          apt-get download php8.3-pgsql=8.3.30-3+ubuntu22.04.1+deb.sury.org+1
+          apt-get download php8.3-pgsql
           ls -lah
 
       - name: Upload deb artifact
