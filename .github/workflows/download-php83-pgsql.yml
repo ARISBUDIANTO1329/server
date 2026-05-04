@@ -1,0 +1,29 @@
+name: Download php8.3-pgsql deb
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Add Ondrej PHP PPA
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common ca-certificates lsb-release
+          sudo add-apt-repository -y ppa:ondrej/php
+          sudo apt-get update
+
+      - name: Download exact package
+        run: |
+          mkdir -p debs
+          cd debs
+          apt-get download php8.3-pgsql=8.3.30-3+ubuntu22.04.1+deb.sury.org+1
+          ls -lah
+
+      - name: Upload deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: php8.3-pgsql-deb
+          path: debs/*.deb
